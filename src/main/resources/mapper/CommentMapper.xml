@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.CommentMapper">
+
+    <resultMap id="commentEssay" type="java.util.Map">
+        <id column="id" property="id"/>
+        <result column="essay_id" property="essayId"/>
+        <result column="comment_text" property="commentText"/>
+        <result column="create_time" property="createTime"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.superbById" javaType="java.util.Map"/>
+        <association property="count" column="id" select="com.superb.mapper.AgreePlMapper.countByCommentId" javaType="java.lang.Long"/>
+    </resultMap>
+
+    <select id="commentCountByEssayId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*) from comment where essay_id = #{essayId} and deleted = 0
+    </select>
+
+<!--    查询一条动态的所有评论 附带评论用户信息 附带评论的点赞数-->
+    <select id="superbCommentById" resultMap="commentEssay" parameterType="java.lang.Long">
+        select * from comment where essay_id = #{essayId} and deleted = 0 order by create_time desc
+    </select>
+
+
+
+
+    <resultMap id="comment" type="java.util.Map">
+        <result column="user_id" property="userId"/>
+        <result column="comment_text" property="commentText"/>
+        <result column="create_time" property="createTime"/>
+        <result column="essay_id" property="essayId"/>
+        <association column="user_id" property="user" select="com.superb.mapper.UserMapper.superbById" javaType="java.util.Map"/>
+        <association column="essay_id" property="essay" select="com.superb.mapper.EssayMapper.selectByEssayId" javaType="java.util.Map"/>
+    </resultMap>
+
+<!--    查询一个用户的所有评论 附带动态相关-->
+    <select id="superbByUserId" resultMap="comment" parameterType="java.lang.Long">
+        select * from comment where user_id = #{userId} and deleted = 0 order by create_time desc
+    </select>
+    <!--    查询一个所有评论 附带动态相关-->
+    <select id="superbListAdmin" resultMap="comment" parameterType="java.lang.Integer">
+        select * from comment where deleted = #{deleted} order by create_time desc
+    </select>
+
+    <select id="adminCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from comment where deleted = #{deleted}
+    </select>
+
+    <update id="fbAdmin" parameterType="java.lang.Integer">
+        update comment set deleted = #{deleted} where id = #{id}
+    </update>
+
+</mapper>

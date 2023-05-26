@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.PhotoMapper">
+
+    <resultMap id="photo" type="java.util.Map">
+        <result column="photo_url" property="photoUrl"/>
+        <result column="essay_id" property="essayId"/>
+        <result column="style_id" property="styleId"/>
+        <result column="news_id" property="newsId"/>
+    </resultMap>
+
+    <select id="newsById" resultMap="photo" parameterType="java.lang.Integer">
+        select * from photo where news_id = #{newsId}
+    </select>
+
+    <select id="essayById" resultMap="photo" parameterType="java.lang.Long">
+        select * from photo where essay_id = #{essayId}
+    </select>
+
+    <select id="styleById" resultMap="photo" parameterType="java.lang.Integer">
+        select * from photo where style_id = #{styleId}
+    </select>
+</mapper>

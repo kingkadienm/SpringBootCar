@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.NewsMapper">
+
+    <select id="listWz" parameterType="java.lang.Integer" resultType="com.superb.entity.News">
+        select * from news where zt = #{zt} order by create_time desc limit #{total}
+    </select>
+
+    <select id="listPh" parameterType="java.lang.Integer" resultType="com.superb.entity.News">
+        select * from news where zt = #{zt} order by `count` desc limit #{total}
+    </select>
+
+<!--    一个用户的文章数量  4代表已审核-->
+    <select id="newsCountByUserId" resultType="java.lang.Integer">
+        select count(*) from news where user_id = #{userId} and zt = 4
+    </select>
+
+
+    <resultMap id="news" type="java.util.Map">
+        <result column="news_photo" property="newsPhoto"/>
+        <result column="create_time" property="createTime"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.selectById" javaType="com.superb.entity.User"/>
+        <association property="fansCount" column="user_id" select="com.superb.mapper.AttentionMapper.fansCountByUserId" javaType="java.lang.Integer"/>
+        <association property="newsCount" column="user_id" select="com.superb.mapper.NewsMapper.newsCountByUserId" javaType="java.lang.Integer"/>
+        <association property="style" column="style_id" select="com.superb.mapper.StyleMapper.selectById" javaType="com.superb.entity.Style"/>
+        <collection property="photo" column="id" select="com.superb.mapper.PhotoMapper.newsById" javaType="java.util.List" ofType="java.util.Map"/>
+    </resultMap>
+<!--    查询文章详情 附带用户信息 粉丝数 文章数量 相关style信息 文章排行 photo-->
+    <select id="newsById" parameterType="java.lang.Integer" resultMap="news">
+        select * from news where id = #{id}
+    </select>
+
+
+
+    <resultMap id="listNews" type="java.util.Map">
+        <result column="news_photo" property="newsPhoto"/>
+        <result column="create_time" property="createTime"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.selectById" javaType="com.superb.entity.User"/>
+    </resultMap>
+
+<!--    查询所有news 附带user-->
+    <select id="listNews" resultType="java.lang.Integer" resultMap="listNews">
+        select * from news where zt = #{zt} order by create_time desc
+    </select>
+
+    <!--    相关文章推荐-->
+    <select id="listByStyleId" parameterType="java.lang.Integer" resultMap="listNews">
+        select * from news where zt = 4 and style_id = #{styleId} order by create_time desc
+    </select>
+
+<!--    用户news审核页面  无需zt = 4-->
+    <select id="itemById" resultMap="listNews" parameterType="java.lang.Integer">
+        select * from news where id = #{id}
+    </select>
+
+    <!--    查询单个用户所有已审核news 附带user-->
+    <select id="itemNews" resultMap="listNews">
+        select * from news where user_id = #{userId} and zt = #{zt} order by create_time desc
+    </select>
+
+    <!--    查询单个用户所有news 附带user-->
+    <select id="itemNewsSy" resultMap="listNews" parameterType="java.lang.Long">
+        select * from news where user_id = #{userId} order by create_time desc
+    </select>
+
+
+<!--    搜索已发布-->
+    <select id="search" parameterType="java.lang.String" resultMap="listNews">
+        select * from news where zt = 4 and title like '%${text}%' order by create_time desc
+    </select>
+
+    <select id="idList" resultType="java.lang.Integer">
+        select id from news where zt = 4
+    </select>
+</mapper>

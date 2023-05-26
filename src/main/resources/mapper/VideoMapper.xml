@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.VideoMapper">
+
+    <resultMap id="listVideo" type="java.util.Map">
+        <result column="video_id" property="videoId"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="style_id" property="styleId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="video_title" property="videoTitle"/>
+        <result column="video_text" property="videoText"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.selectById" javaType="com.superb.entity.User"/>
+    </resultMap>
+
+
+    <!--    搜索已发布-->
+    <select id="search" parameterType="java.lang.String" resultMap="listVideo">
+        select * from video where zt = 2 and video_title like '%${text}%' order by create_time desc
+    </select>
+
+    <!--    相关视频推荐-->
+    <select id="listByStyleId" parameterType="java.lang.Integer" resultMap="listVideo">
+        select * from video where zt = 2 and style_id = #{styleId} order by create_time desc
+    </select>
+
+
+    <!--    查询所有video附带user-->
+    <select id="listVideo" resultType="java.lang.Integer" resultMap="listVideo">
+        select * from video where zt = #{zt} order by create_time desc
+    </select>
+
+    <!--    查询个人video附带user-->
+    <select id="listByUserId" resultType="java.lang.Integer" resultMap="listVideo">
+        select * from video where user_id = #{userId} order by create_time desc
+    </select>
+
+    <select id="listPh" parameterType="java.lang.Integer" resultType="com.superb.entity.Video">
+        select * from video where zt = #{zt} order by `count` desc limit #{total}
+    </select>
+
+    <resultMap id="video" type="java.util.Map">
+        <result column="video_id" property="videoId"/>
+        <result column="video_url" property="videoUrl"/>
+        <result column="create_time" property="createTime"/>
+        <result column="video_title" property="videoTitle"/>
+        <result column="video_text" property="videoText"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.selectById" javaType="com.superb.entity.User"/>
+        <association property="fansCount" column="user_id" select="com.superb.mapper.AttentionMapper.fansCountByUserId" javaType="java.lang.Integer"/>
+        <association property="videoCount" column="user_id" select="com.superb.mapper.VideoMapper.videoCountByUserId" javaType="java.lang.Integer"/>
+        <association property="style" column="style_id" select="com.superb.mapper.StyleMapper.selectById" javaType="com.superb.entity.Style"/>
+    </resultMap>
+    <!--    查询文章详情 附带用户信息 粉丝数 文章数量 相关style信息 文章排行 photo-->
+    <select id="videoById" parameterType="java.lang.Integer" resultMap="video">
+        select * from video where id = #{id}
+    </select>
+
+    <select id="videoCountByUserId" resultType="java.lang.Integer">
+        select count(*) from video where user_id = #{userId} and zt = 2
+    </select>
+
+
+    <select id="idList" resultType="java.lang.Integer">
+        select id from video where zt = 2
+    </select>
+
+
+</mapper>

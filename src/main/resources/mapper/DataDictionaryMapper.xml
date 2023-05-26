@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.DataDictionaryMapper">
+
+    <select id="listAdmin" resultType="java.util.Map">
+        select a.*,b.type_name from data_dictionary a left join data_type b on a.fjd = b.type_id
+    </select>
+
+
+    <select id="selectData" parameterType="java.lang.String" resultType="java.util.Map">
+        select b.* from data_type a, data_dictionary b where a.type_id = b.fjd and a.type_name = #{typeName}
+    </select>
+
+
+    <select id="selectDataById" parameterType="java.lang.Integer" resultType="java.util.Map">
+        select * from data_dictionary where id = #{id}
+    </select>
+
+</mapper>

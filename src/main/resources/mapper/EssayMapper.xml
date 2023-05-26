@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.EssayMapper">
+
+    <resultMap id="essay" type="com.superb.dto.EssayDto">
+        <id column="essay_id" property="essayId"/>
+        <result column="essay_title" property="essayTitle"/>
+        <result column="essay_text" property="essayText"/>
+        <result column="user_id" property="userId"/>
+        <result column="deleted" property="deleted"/>
+        <result column="essay_label" property="essayLabel"/>
+        <!--连接用户表 显示发动态的用户-->
+        <association column="user_id" property="user"
+                     select="com.superb.mapper.UserMapper.superbById"
+                     javaType="com.superb.entity.User"/>
+
+        <!--连接转发表 显示动态的转发数量-->
+        <association column="essay_id" property="forwardCount"
+                     select="com.superb.mapper.ForwardMapper.forwardCountByEssayId"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接点赞表 显示动态的点赞数-->
+        <association column="essay_id" property="agreeCount"
+                     select="com.superb.mapper.AgreeMapper.agreeCountByEssayId"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接评论表 显示动态的评论数-->
+        <association column="essay_id" property="commentCount"
+                     select="com.superb.mapper.CommentMapper.commentCountByEssayId"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接转发表 显示动态的所有转发-->
+        <collection column="essay_id" property="forward"
+                    select="com.superb.mapper.ForwardMapper.superbForwardById"
+                    javaType="java.util.List"
+                    ofType="com.superb.entity.Forward"/>
+
+        <!--连接点赞表 显示动态的所有点赞-->
+        <collection column="essay_id" property="agree"
+                    select="com.superb.mapper.AgreeMapper.superbAgreeById"
+                    javaType="java.util.List"
+                    ofType="com.superb.entity.Agree"/>
+
+        <!--连接评论表 显示动态的所有评论-->
+        <collection column="essay_id" property="comment"
+                    select="com.superb.mapper.CommentMapper.superbCommentById"
+                    javaType="java.util.List"
+                    ofType="com.superb.entity.Comment"/>
+    </resultMap>
+
+    <!--显示一条动态详情-->
+    <select id="superbByEssayId" resultMap="essay" parameterType="java.lang.Long">
+        select * from essay where essay_id = #{essayId}
+    </select>
+
+
+
+    <resultMap id="essayMap" type="java.util.Map">
+        <id column="essay_id" property="essayId"/>
+        <result column="user_id" property="userId"/>
+        <result column="essay_title" property="essayTitle"/>
+        <result column="essay_text" property="essayText"/>
+        <result column="create_time" property="createTime"/>
+        <result column="essay_label" property="essayLabel"/>
+        <!--连接用户表 显示发动态的用户-->
+        <association column="user_id" property="user"
+                     select="com.superb.mapper.UserMapper.superbById"
+                     javaType="com.superb.entity.User"/>
+
+        <!--连接转发表 显示动态的转发数量-->
+        <association column="essay_id" property="forwardCount"
+                     select="com.superb.mapper.ForwardMapper.forwardCountByEssayId"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接点赞表 显示动态的点赞数量-->
+        <association column="essay_id" property="agreeCount"
+                    select="com.superb.mapper.AgreeMapper.agreeCountByEssayId"
+                    javaType="java.lang.Integer"/>
+
+        <!--连接评论表 显示动态的评论数量-->
+        <association column="essay_id" property="commentCount"
+                    select="com.superb.mapper.CommentMapper.commentCountByEssayId"
+                    javaType="java.lang.Integer"/>
+    </resultMap>
+    <!--查询一个用户的所有动态 包含转发数点赞数评论数-->
+    <select id="superbEssayById" resultMap="essayMap" parameterType="java.lang.Long">
+        select * from essay where user_id = #{userId} and deleted = 0 order by create_time desc
+    </select>
+
+    <!--查询所有动态 包含转发数点赞数评论数-->
+    <select id="superbAllEssay" resultMap="essayMap">
+        select * from essay where deleted = #{deleted} order by create_time desc
+    </select>
+
+
+    <select id="adminCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from essay where deleted = #{deleted}
+    </select>
+
+
+    <!--显示一条动态 包含转发数点赞数评论数-->
+    <select id="selectByEssayId" resultMap="essayMap" parameterType="java.lang.Long">
+        select * from essay where essay_id = #{essayId} and deleted = 0
+    </select>
+
+    <update id="fbAdmin">
+        update essay set deleted = #{deleted} where essay_id = #{essayId}
+    </update>
+
+    <select id="search" parameterType="java.lang.String" resultMap="essayMap">
+        select * from essay where deleted = 0 and essay_title like '%${text}%' order by create_time desc
+    </select>
+
+
+
+</mapper>

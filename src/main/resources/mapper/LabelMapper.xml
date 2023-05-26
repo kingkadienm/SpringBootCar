@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.LabelMapper">
+
+    <resultMap id="labelMap" type="com.superb.entity.Label">
+        <id column="label_id" property="labelId"/>
+        <result column="label_text" property="labelText"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="listLabel" parameterType="java.util.List" resultMap="labelMap">
+        select * from label where label_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+<!--    以下为管理员-->
+
+<!--    查询所有标签，包括逻辑删除-->
+    <select id="listAdmin" resultMap="labelMap">
+        select * from label order by create_time desc
+    </select>
+
+    <delete id="deleteAdmin" parameterType="java.lang.Integer">
+        delete from label where label_id = #{labelId}
+    </delete>
+
+    <update id="updateAdmin" parameterType="com.superb.entity.Label">
+        update label set label_text = #{labelText}, update_time = #{updateTime} where label_id = #{labelId}
+    </update>
+
+
+    <update id="jyAdmin" parameterType="com.superb.entity.Label">
+        update label set deleted = #{deleted}, update_time = #{updateTime} where label_id = #{labelId}
+    </update>
+
+
+
+</mapper>

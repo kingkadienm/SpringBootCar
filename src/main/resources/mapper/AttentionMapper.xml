@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.AttentionMapper">
+
+    <resultMap id="attention" type="com.superb.dto.AttentionDto">
+        <result column="this_id" property="thisId"/>
+        <result column="create_time" property="createTime"/>
+        <association column="that_id" property="user" select="com.superb.mapper.UserMapper.superbById"
+                     javaType="com.superb.entity.User"/>
+    </resultMap>
+    <select id="superbAttentionById" resultMap="attention" parameterType="java.lang.Long">
+        select * from attention where this_id = #{thisId}
+    </select>
+
+<!--    不分页-->
+    <select id="superbById" resultMap="attention" parameterType="java.lang.Long">
+        select * from attention where this_id = #{thisId}
+    </select>
+
+
+    <resultMap id="fans" type="com.superb.dto.AttentionDto">
+        <result column="that_id" property="thatId"/>
+        <result column="create_time" property="createTime"/>
+        <association column="this_id" property="user" select="com.superb.mapper.UserMapper.superbById"
+                     javaType="com.superb.entity.User"/>
+    </resultMap>
+    <select id="superbFansById" resultMap="fans" parameterType="java.lang.Long">
+        select * from attention where that_id = #{thatId}
+    </select>
+
+
+
+<!--    查询粉丝数量-->
+    <select id="fansCountByUserId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*) from attention where that_id = #{thatId}
+    </select>
+
+
+</mapper>

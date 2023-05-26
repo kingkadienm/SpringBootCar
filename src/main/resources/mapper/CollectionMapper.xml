@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.CollectionMapper">
+    <resultMap id="collection" type="com.superb.dto.CollectionDto">
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+        <association property="style" column="style_id"
+                     select="com.superb.mapper.StyleMapper.superbById"
+                     javaType="com.superb.entity.Style"/>
+    </resultMap>
+    <select id="superbCollectionById" resultMap="collection" parameterType="java.lang.Long">
+        select * from collection where user_id = #{userId}
+    </select>
+</mapper>

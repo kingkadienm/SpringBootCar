@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.MessageMapper">
+
+    <resultMap id="message" type="java.util.Map">
+        <id column="message_id" property="messageId"/>
+        <result column="message_title" property="messageTitle"/>
+        <result column="message_text" property="messageText"/>
+        <result column="that_id" property="thatId"/>
+        <result column="this_id" property="thisId"/>
+        <result column="user_id" property="userId"/>
+        <result column="message_type" property="messageType"/>
+        <result column="create_time" property="createTime"/>
+<!--        发送人-->
+        <result column="user_name" property="userName"/>
+        <result column="essay_title" property="essayTitle"/>
+        <result column="essay_id" property="essayId"/>
+        <result column="id" property="commentId"/>
+        <result column="comment_text" property="commentText"/>
+        <result column="essay_id2" property="essayId2"/>
+<!--        相关人-->
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.superbById" javaType="java.util.Map"/>
+    </resultMap>
+
+    <select id="superbMessageById" resultMap="message">
+        select a.*,b.user_name,c.essay_title,c.essay_id,d.id,d.comment_text,d.essay_id essay_id2 from message a INNER JOIN `user` b on a.that_id = b.user_id LEFT JOIN essay c on a.essay_id = c.essay_id LEFT JOIN comment d on a.comment_id = d.id where a.this_id = #{userId} and a.message_type = #{messageType} and a.deleted = 0 order by a.create_time desc
+    </select>
+</mapper>

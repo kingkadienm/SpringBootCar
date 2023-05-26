@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.AgreeMapper">
+    <resultMap id="agree" type="java.util.Map">
+        <result column="essay_id" property="essayId"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.superbById" javaType="java.util.Map"/>
+    </resultMap>
+
+    <select id="superbAgreeById" resultMap="agree">
+        select * from agree where essay_id = #{essayId}
+    </select>
+
+    <select id="agreeCountByEssayId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*) from agree where essay_id = #{essayId}
+    </select>
+</mapper>

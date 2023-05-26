@@ -1,0 +1,56 @@
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/car_home?serverTimezone=GMT%2B8&useSSL=false&useUnicode=true&charsetEncoding=utf-8
+    username: root
+    password: 123456
+  # 邮件配置，用于用户注册时作为验证码发送方，需要去相关邮箱服务商开启指定配置
+  mail:
+    username: username # 你的username
+    password: password # 你的password
+    host: smtp.163.com
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 1024MB
+
+  redis:
+    host: localhost # 你的ip
+    database: 0
+    port: 6379
+    password: password # 你的redis密码
+    lettuce:
+      pool:
+        max-active: 8 # 最大连接
+        max-idle: 8 # 最大空闲连接
+        min-idle: 0 # 最小空闲连接
+        max-wait: 1000ms # 最长等待时间
+
+
+
+# MyBatisPlus配置
+mybatis-plus:
+  configuration:
+    # MyBatisPlus日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 逻辑删除配置
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+server:
+  port: 8081
+  servlet:
+    context-path: '/car'
+
+# oss对象存储，阿里云官网开启对象存储和视频点播功能，如不需要上传图片，视频等文件，此部分可注释掉
+aliyun:
+  oss:
+    file:
+      endpoint: oss-cn-beijing.aliyuncs.com
+      keyid: keyid # 你的keyid
+      keysecret: keysecret # 你的keysecret
+      bucketname: bucketname # 你的bucketname

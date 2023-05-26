@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.FoldMapper">
+    <resultMap id="foldMap" type="java.util.Map">
+        <association property="style" column="style_id" select="com.superb.mapper.StyleMapper.superbByIdAdmin" javaType="com.superb.entity.Style"/>
+    </resultMap>
+
+    <select id="foldListAdmin" resultMap="foldMap">
+        select * from fold
+    </select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.ForwardMapper">
+
+
+    <resultMap id="forward" type="java.util.Map">
+        <result column="user_id" property="userId"/>
+        <result column="forward_title" property="forwardTitle"/>
+        <result column="create_time" property="createTime"/>
+        <!--连接用户表 显示发动态的用户-->
+        <association column="user_id" property="user"
+                     select="com.superb.mapper.UserMapper.superbById"
+                     javaType="com.superb.entity.User"/>
+<!--        连接动态表-->
+        <association column="essay_id" property="essay"
+                     select="com.superb.mapper.EssayMapper.selectByEssayId"
+                     javaType="java.util.Map"/>
+    </resultMap>
+
+    <select id="superbByUserId" resultMap="forward" parameterType="java.lang.Long">
+        select * from forward where user_id = #{userId} and deleted = 0 order by create_time desc
+    </select>
+
+<!--    查询所有转发 连接动态表-->
+    <select id="superbAllForward" resultMap="forward" parameterType="java.lang.Integer">
+        select * from forward where deleted = #{deleted} order by create_time desc
+    </select>
+
+
+
+    <select id="forwardCountByEssayId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        select count(*) from forward where essay_id = #{essayId} and deleted = 0
+    </select>
+
+    <select id="adminCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(*) from forward where deleted = #{deleted}
+    </select>
+
+
+    <resultMap id="forwardMap" type="java.util.Map">
+        <result column="essay_id" property="essayId"/>
+        <association property="user" column="user_id" select="com.superb.mapper.UserMapper.superbById" javaType="java.util.Map"/>
+    </resultMap>
+
+<!--    用于一条动态详情使用  查询所有转发人信息-->
+    <select id="superbForwardById" resultMap="forwardMap">
+        select * from forward where essay_id = #{essayId}
+    </select>
+
+    <update id="fbAdmin" parameterType="java.lang.Integer">
+        update forward set deleted = #{deleted} where id = #{id}
+    </update>
+</mapper>

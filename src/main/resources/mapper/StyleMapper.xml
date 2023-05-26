@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.superb.mapper.StyleMapper">
+
+    <select id="superbById" resultType="com.superb.entity.Style" parameterType="java.lang.Integer">
+        select * from style where style_id = #{styleId} and deleted = 0
+    </select>
+
+    <select id="superbByIdAdmin" resultType="com.superb.entity.Style" parameterType="java.lang.Integer">
+        select * from style where style_id = #{styleId}
+    </select>
+
+<!--    收藏排行连表查询-->
+    <select id="scPh" resultType="java.util.Map">
+        select s.*,count(`c`.style_id) `count` from style s left join collection `c` on s.style_id = c.style_id where s.deleted = 0 group by s.style_id order by `count` desc limit #{count}
+    </select>
+
+
+    <select id="pfPh" resultType="java.util.Map">
+        select *,round((zpf / pfrs),1) pf from style order by pf desc limit #{count}
+    </select>
+
+    <select id="listAdminLbt" resultType="java.util.Map">
+        select *,round((zpf / pfrs),1) pf from style where img_lbt != '' order by create_time desc
+    </select>
+
+<!--    上下架-->
+    <update id="updateAdmin" parameterType="com.superb.entity.Style">
+        update style set update_time = #{updateTime}, deleted = #{deleted} where style_id = #{styleId}
+    </update>
+
+<!--    修改style图片-->
+    <update id="updateStylePhoto" parameterType="com.superb.entity.Style">
+        update style set update_time = #{updateTime}, style_photo = #{stylePhoto} where style_id = #{styleId}
+    </update>
+<!--修改style信息-->
+    <update id="updateStyle" parameterType="com.superb.entity.Style">
+        update style set jgqj = #{jgqj}, cs = #{cs}, style_name = #{styleName}, jb = #{jb}, gb = #{gb}, sssj = #{sssj}, hbbz = #{hbbz}, nylx = #{nylx}, xl = #{xl}, update_time = #{updateTime} where style_id = #{styleId}
+    </update>
+
+    <select id="listAdmin" resultType="com.superb.entity.Style">
+        select * from style order by create_time desc
+    </select>
+
+<!--多条件筛选-->
+    <select id="selectXc" parameterType="java.util.Map" resultType="com.superb.entity.Style">
+        select *
+        from style
+        where deleted = 0
+        <if test="csTj != null and csTj !=''">
+            and cs = #{csTj}
+        </if>
+        <if test="jbTj != null and jbTj !=''">
+            and jb = #{jbTj}
+        </if>
+        <if test="gbTj != null and gbTj !=''">
+            and gb = #{gbTj}
+        </if>
+        <if test="hbbzTj != null and hbbzTj !=''">
+            and hbbz = #{hbbzTj}
+        </if>
+        <if test="nylxTj != null and nylxTj !=''">
+            and nylx = #{nylxTj}
+        </if>
+        order by create_time desc
+    </select>
+
+
+    <select id="search" parameterType="java.lang.String" resultType="com.superb.entity.Style">
+        select * from style where deleted = 0 and style_name like '%${text}%' order by create_time desc
+    </select>
+
+
+
+    <resultMap id="style" type="java.util.Map">
+        <id column="style_id" property="styleId"/>
+        <result column="style_name" property="styleName"/>
+        <result column="img_lbt" property="imgLbt"/>
+        <result column="style_photo" property="stylePhoto"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!--连接字典 显示国别-->
+        <association column="gb" property="gb"
+                     select="com.superb.mapper.DataDictionaryMapper.selectDataById"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接字典 显示级别-->
+        <association column="jb" property="jb"
+                     select="com.superb.mapper.DataDictionaryMapper.selectDataById"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接字典 显示环保标准-->
+        <association column="hbbz" property="hbbz"
+                     select="com.superb.mapper.DataDictionaryMapper.selectDataById"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接字典 显示环保标准-->
+        <association column="nylx" property="nylx"
+                     select="com.superb.mapper.DataDictionaryMapper.selectDataById"
+                     javaType="java.lang.Integer"/>
+
+        <!--连接字典 显示厂商-->
+        <association column="cs" property="cs"
+                     select="com.superb.mapper.DataDictionaryMapper.selectDataById"
+                     javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <select id="xq" parameterType="java.lang.Integer" resultMap="style">
+        select * from style where style_id = #{styleId}
+    </select>
+</mapper>
